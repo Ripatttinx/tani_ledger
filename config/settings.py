@@ -6,13 +6,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'development-only-change-me-before-deploying')
 DEBUG = os.getenv('DJANGO_DEBUG', '1') == '1'
 
-# Support Railway.app deployment: RAILWAY_STATIC_URL is set automatically
-_allowed = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1')
-_railway_host = os.getenv('RAILWAY_STATIC_URL', '')
-ALLOWED_HOSTS = _allowed.split(',') + ([_railway_host] if _railway_host else [])
-CSRF_TRUSTED_ORIGINS = (
-    ['https://' + _railway_host] if _railway_host else []
-)
+# Izinkan semua host Railway dan domain publik
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+    'https://taniledger-production.up.railway.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',
     'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
