@@ -1,0 +1,12 @@
+{% extends 'accounting/base.html' %}{% load money %}{% block content %}
+<div class="page-head"><div><div class="eyebrow">ACCOUNTING CYCLE</div><h1>Jurnal Penutup</h1><p>Menutup akun nominal (pendapatan dan beban) ke Ikhtisar Laba Rugi, lalu memindahkan hasilnya ke saldo laba.</p></div></div>
+{% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+<form method="get" class="filter-strip"><label>Dari tanggal</label><input class="form-control input-compact" type="date" name="from" value="{{ start|date:'Y-m-d' }}"><label>Hingga</label><input class="form-control input-compact" type="date" name="to" value="{{ end|date:'Y-m-d' }}"><button class="btn btn-soft">Tampilkan</button></form>
+<div class="panel" style="margin-bottom:18px"><div class="panel-header"><h2>Pratinjau saldo akun nominal</h2><span class="muted-pill">{{ start|date:'d-m-Y' }} – {{ end|date:'d-m-Y' }}</span></div><div class="table-scroll"><table class="data-table"><thead><tr><th>Kode</th><th>Nama akun</th><th class="right">Debet periode</th><th class="right">Kredit periode</th><th class="right">Jurnal penutup debet</th><th class="right">Jurnal penutup kredit</th></tr></thead><tbody>
+{% for row in preview.rows %}<tr><td>{{ row.account.code }}</td><td>{{ row.account.name }}</td><td class="right money">{{ row.debit|rupiah }}</td><td class="right money">{{ row.credit|rupiah }}</td><td class="right money">{{ row.closing_debit|rupiah }}</td><td class="right money">{{ row.closing_credit|rupiah }}</td></tr>{% empty %}<tr><td colspan="6" class="empty">Belum ada saldo nominal untuk periode ini.</td></tr>{% endfor %}
+</tbody></table></div><div class="panel-footer"><strong>Hasil periode:</strong> {% if preview.profit >= 0 %}Laba {{ preview.profit|rupiah }}{% else %}Rugi {{ preview.profit|floatformat:2 }}{% endif %}</div></div>
+<div class="panel" style="padding:20px"><h2>Buat jurnal penutup</h2><p class="muted">Sistem membuat satu dokumen penutup yang seimbang. Akun nominal ditutup dan hasil bersih dipindahkan ke akun 3110 Retained earnings. Akun neraca tidak ditutup.</p>
+{% if already_closed %}<div class="notice warning">Jurnal penutup untuk tanggal akhir periode ini sudah ada. Tidak dibuat ulang otomatis.</div>{% else %}
+<form method="post">{% csrf_token %}<input type="hidden" name="from" value="{{ start|date:'Y-m-d' }}"><input type="hidden" name="to" value="{{ end|date:'Y-m-d' }}"><button class="btn btn-primary" type="submit" {% if not preview.rows %}disabled{% endif %}>Buat Jurnal Penutup</button></form>{% endif %}
+</div>
+{% endblock %}

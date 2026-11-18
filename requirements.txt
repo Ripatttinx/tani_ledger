@@ -1,0 +1,4 @@
+Django>=5.2.19,<5.3
+openpyxl>=3.1.5,<4
+gunicorn>=21.2.0
+whitenoise>=6.7.0
